@@ -1,0 +1,38 @@
+import tkinter as tk
+from tkinter import messagebox
+import sqlite3
+
+def login():
+    user = entry_user.get()
+    pwd = entry_pass.get()
+
+    conn = sqlite3.connect("C:/wamp64/www/Seuguridad/users.db")
+    cursor = conn.cursor()
+
+    # VULNERABILIDAD: concatenación de strings => SQL Injection posible
+    query = f"SELECT * FROM users WHERE username = '{user}' AND password = '{pwd}'"
+    cursor.execute(query)
+
+    result = cursor.fetchone()
+
+    if result:
+        messagebox.showinfo("Login", "¡Inicio de sesión exitoso!")
+    else:
+        messagebox.showerror("Login", "Credenciales inválidas")
+
+    conn.close()
+
+root = tk.Tk()
+root.title("Login Inseguro")
+
+tk.Label(root, text="Usuario:").pack()
+entry_user = tk.Entry(root)
+entry_user.pack()
+
+tk.Label(root, text="Contraseña:").pack()
+entry_pass = tk.Entry(root, show="*")
+entry_pass.pack()
+
+tk.Button(root, text="Iniciar Sesión", command=login).pack(pady=10)
+
+root.mainloop()
